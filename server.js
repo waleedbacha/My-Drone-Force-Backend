@@ -11,19 +11,36 @@ connectDB();
 
 const app = express();
 
-// Middleware
-// In server.js, update your CORS configuration
+// Middleware - Updated CORS configuration for production
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://my-drone-force.vercel.app",
+  "https://my-drone-force-git-main.vercel.app",
+  "https://my-drone-force.vercel.app",
+];
+
 app.use(
   cors({
-    origin: "http://localhost:3000", // Your React app URL
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) === -1) {
+        const msg =
+          "The CORS policy for this site does not allow access from the specified Origin.";
+        return callback(new Error(msg), false);
+      }
+      return callback(null, true);
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static("uploads"));
+
 // Routes
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/admin", require("./routes/adminRoutes"));
