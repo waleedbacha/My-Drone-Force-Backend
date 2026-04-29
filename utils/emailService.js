@@ -2,13 +2,13 @@ const nodemailer = require("nodemailer");
 
 // Create transporter with proper Gmail settings
 const transporter = nodemailer.createTransport({
-  service: "gmail", // Use 'gmail' service instead of manual config
+  service: "gmail",
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
   tls: {
-    rejectUnauthorized: false, // Add this to avoid certificate errors
+    rejectUnauthorized: false,
   },
 });
 
@@ -24,7 +24,7 @@ const verifyConnection = async () => {
 
 verifyConnection();
 
-// Send registration confirmation email
+// Send registration confirmation email to student
 const sendRegistrationEmail = async (userEmail, userName) => {
   try {
     const mailOptions = {
@@ -73,47 +73,69 @@ const sendRegistrationEmail = async (userEmail, userName) => {
       `,
     };
 
-    const info = await transporter.sendMail(mailOptions);
-    console.log("✅ Email sent to:", userEmail);
+    await transporter.sendMail(mailOptions);
+    console.log("✅ Registration email sent to:", userEmail);
     return true;
   } catch (error) {
-    console.error("❌ Email error:", error.message);
+    console.error("❌ Registration email error:", error.message);
     return false;
   }
 };
 
-// Send admin notification for new registration
+// Send admin notification for new registration (supports multiple admins)
 const sendAdminNotification = async (userData) => {
   try {
+    // Handle multiple admin emails (comma-separated)
+    let adminEmails = process.env.ADMIN_EMAIL;
+    if (!adminEmails) {
+      console.error("❌ ADMIN_EMAIL environment variable not set");
+      return false;
+    }
+
+    // Split by comma and clean up whitespace
+    const recipientList = adminEmails.split(",").map((email) => email.trim());
+
     const mailOptions = {
       from: `"My Drone Force" <${process.env.EMAIL_USER}>`,
-      to: process.env.ADMIN_EMAIL,
+      to: recipientList,
       subject: "📝 New Student Registration",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px;">
-          <h2>New Student Registration</h2>
+          <h2 style="color: #0066cc;">🚁 New Student Registration</h2>
           <p>A new student has registered on My Drone Force.</p>
-          <table style="border-collapse: collapse; width: 100%;">
-            <tr><td style="padding: 8px; background: #f5f5f5;"><strong>Name:</strong></td>
-            <td>${userData.firstName} ${userData.lastName}</td>
-          </tr>
-          <tr><td style="padding: 8px;"><strong>Email:</strong></td>
-            <td>${userData.email}</td>
-          </tr>
-          <tr><td style="padding: 8px; background: #f5f5f5;"><strong>Phone:</strong></td>
-            <td>${userData.phone}</td>
-          </tr>
-          <tr><td style="padding: 8px;"><strong>Course:</strong></td>
-            <td>${userData.courseInterest}</td>
-          </tr>
+          <table style="border-collapse: collapse; width: 100%; margin: 15px 0;">
+            <tr>
+              <td style="padding: 10px; background: #f5f5f5; width: 120px;"><strong>Name:</strong></td>
+              <td style="padding: 10px;">${userData.firstName} ${userData.lastName}</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px;"><strong>Email:</strong></td>
+              <td style="padding: 10px;">${userData.email}</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px; background: #f5f5f5;"><strong>Phone:</strong></td>
+              <td style="padding: 10px;">${userData.phone}</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px;"><strong>Course:</strong></td>
+              <td style="padding: 10px;">${userData.courseInterest}</td>
+            </tr>
           </table>
-          <p>Log in to the admin dashboard to view all details.</p>
+          <p>
+            <a href="https://mydroneforce.com/admin/dashboard" style="background: #0066cc; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
+              View Admin Dashboard →
+            </a>
+          </p>
+          <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;" />
+          <p style="font-size: 12px; color: #666;">My Drone Force | 300 South Spring Street, Little Rock, AR 72201</p>
         </div>
       `,
     };
 
     await transporter.sendMail(mailOptions);
-    console.log("✅ Admin notification sent");
+    console.log(
+      `✅ Admin notification sent to ${recipientList.length} recipients`,
+    );
     return true;
   } catch (error) {
     console.error("❌ Admin notification error:", error.message);

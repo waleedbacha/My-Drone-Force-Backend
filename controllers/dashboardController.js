@@ -1,5 +1,11 @@
 const User = require("../models/User");
 const OnboardingProgress = require("../models/OnboardingProgress");
+const {
+  getRegionByState,
+  getAllRegions,
+  getStatesByRegion,
+  isInTargetRegion,
+} = require("../utils/regionMapping");
 
 // @desc    Get complete dashboard data
 // @route   GET /api/admin/dashboard
@@ -231,6 +237,46 @@ const getDashboardData = async (req, res) => {
     const goalStatus = passRate >= goal ? "✅ ACHIEVED" : "⚠️ BELOW GOAL";
     const goalColor = passRate >= goal ? "#10b981" : "#f59e0b";
 
+    // ========== 9. REGION BREAKDOWN (NEW) ==========
+    const regionBreakdown = {
+      "Core Mid-South": 0,
+      "Deep South": 0,
+      Other: 0,
+      Unknown: 0,
+    };
+
+    allUsers.forEach((user) => {
+      const region = getRegionByState(user.state);
+      regionBreakdown[region]++;
+    });
+
+    // Calculate region percentages
+    const totalUsersWithState = allUsers.filter((u) => u.state).length;
+    const regionPercentages = {};
+    Object.keys(regionBreakdown).forEach((region) => {
+      regionPercentages[region] =
+        totalUsersWithState > 0
+          ? Math.round((regionBreakdown[region] / totalUsersWithState) * 100)
+          : 0;
+    });
+
+    // Prepare data for frontend charts
+    const regionChartData = Object.keys(regionBreakdown)
+      .filter((region) => region !== "Unknown")
+      .map((region) => ({
+        region: region,
+        count: regionBreakdown[region],
+        percentage: regionPercentages[region],
+      }));
+
+    // ========== 10. TARGET REGION STUDENTS (Core Mid-South + Deep South combined) ==========
+    const targetRegionStudents =
+      regionBreakdown["Core Mid-South"] + regionBreakdown["Deep South"];
+    const targetRegionPercentage =
+      totalUsersWithState > 0
+        ? Math.round((targetRegionStudents / totalUsersWithState) * 100)
+        : 0;
+
     res.json({
       success: true,
       data: {
@@ -355,6 +401,12 @@ const getDashboardData = async (req, res) => {
           status: goalStatus,
           color: goalColor,
         },
+        // NEW: Region breakdown data
+        regionBreakdown: regionBreakdown,
+        regionPercentages: regionPercentages,
+        regionChartData: regionChartData,
+        targetRegionStudents: targetRegionStudents,
+        targetRegionPercentage: targetRegionPercentage,
       },
     });
   } catch (error) {
