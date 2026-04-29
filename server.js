@@ -17,6 +17,8 @@ const allowedOrigins = [
   "https://my-drone-force.vercel.app",
   "https://my-drone-force-git-main.vercel.app",
   "https://my-drone-force.vercel.app",
+  "https://mydroneforce.com",
+  "https://www.mydroneforce.com",
 ];
 
 app.use(
