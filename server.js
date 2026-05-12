@@ -11,7 +11,19 @@ connectDB();
 
 const app = express();
 
-// Middleware - Updated CORS configuration for production
+// ========== STRIPE WEBHOOK (MUST BE BEFORE express.json) ==========
+// Stripe webhook needs raw body for signature verification
+app.post(
+  "/api/webhooks/stripe",
+  express.raw({ type: "application/json" }),
+  (req, res) => {
+    const { handleStripeWebhook } = require("./controllers/paymentController");
+    handleStripeWebhook(req, res);
+  },
+);
+
+// ========== REGULAR MIDDLEWARE ==========
+// Updated CORS configuration for production
 const allowedOrigins = [
   "http://localhost:3000",
   "https://my-drone-force.vercel.app",
@@ -24,7 +36,6 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps or curl)
       if (!origin) return callback(null, true);
       if (allowedOrigins.indexOf(origin) === -1) {
         const msg =
@@ -43,10 +54,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static("uploads"));
 
-// Routes
+// ========== ROUTES ==========
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/admin", require("./routes/adminRoutes"));
 app.use("/api/onboarding", require("./routes/onboardingRoutes"));
+app.use("/api/payment", require("./routes/paymentRoutes")); // ← ADD THIS
 
 // Test route
 app.get("/api/test", (req, res) => {
@@ -79,5 +91,8 @@ app.listen(PORT, () => {
   console.log(`📍 http://localhost:${PORT}`);
   console.log(
     `📧 Email notifications: ${process.env.EMAIL_USER ? "Configured" : "Not configured"}`,
+  );
+  console.log(
+    `💳 Stripe: ${process.env.STRIPE_SECRET_KEY ? "Configured" : "Not configured"}`,
   );
 });

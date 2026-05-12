@@ -252,6 +252,31 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+
+    // ========== PAYMENT FIELDS (NEW) ==========
+    paymentRequired: {
+      type: Boolean,
+      default: true,
+    },
+    paymentStatus: {
+      type: String,
+      enum: ["pending", "completed", "failed", "refunded"],
+      default: "pending",
+      index: true,
+    },
+    stripePaymentIntentId: {
+      type: String,
+      default: "",
+      index: true,
+    },
+    paymentAmount: {
+      type: Number,
+      default: 0,
+      description: "Amount paid in dollars",
+    },
+    paymentCompletedAt: {
+      type: Date,
+    },
   },
   {
     timestamps: true,

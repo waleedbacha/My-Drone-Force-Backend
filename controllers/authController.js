@@ -92,6 +92,25 @@ const parseCommitmentAgreements = (commitmentAgreements) => {
   return [];
 };
 
+// Helper function to check if user is already fully registered
+const isUserFullyRegistered = (user) => {
+  return user.registrationStatus === "registration_completed";
+};
+
+// Helper function to get user registration state for resume
+const getUserRegistrationState = (user) => {
+  return {
+    userId: user._id,
+    registrationStatus: user.registrationStatus,
+    paymentStatus: user.paymentStatus,
+    eligibilityStatus: user.screeningRubric?.eligibilityStatus || null,
+    currentStep: user.currentStep,
+    isFullyRegistered: user.registrationStatus === "registration_completed",
+    hasPaid: user.paymentStatus === "completed",
+    canResume: true,
+  };
+};
+
 // @desc    STEP 1: Candidate Intake Form
 // @route   POST /api/auth/register/step1
 // @access  Public
@@ -493,8 +512,8 @@ const registerStep3 = async (req, res) => {
       pledgeCompleted: true,
     };
 
-    user.registrationStatus = "step3_pledge_signed";
-    user.currentStep = 4;
+    user.registrationStatus = "registration_completed";
+    user.currentStep = 5;
 
     await user.save();
 
@@ -559,14 +578,54 @@ const registerStep3 = async (req, res) => {
 // @desc    Check if email exists
 // @route   POST /api/auth/check-email
 // @access  Public
+// @desc    Check if email exists and return registration state
+// @route   POST /api/auth/check-email
+// @access  Public
+// @desc    Check if email exists and return registration state
+// @route   POST /api/auth/check-email
+// @access  Public
 const checkEmail = async (req, res) => {
   try {
     const { email } = req.body;
-    const userExists = await User.findOne({ email });
+
+    if (!email) {
+      return res.json({
+        success: true,
+        exists: false,
+        message: "No email provided",
+      });
+    }
+
+    const user = await User.findOne({ email });
+
+    if (user) {
+      // ✅ FIX: Treat both as fully registered
+      const isFullyRegistered =
+        user.registrationStatus === "registration_completed" ||
+        user.registrationStatus === "step3_pledge_signed";
+
+      console.log(
+        `Email: ${email}, Status: ${user.registrationStatus}, isFullyRegistered: ${isFullyRegistered}`,
+      );
+
+      return res.json({
+        success: true,
+        exists: true,
+        isFullyRegistered: isFullyRegistered,
+        message: isFullyRegistered
+          ? "This email is already registered. Please contact support."
+          : "An incomplete registration exists for this email. You can continue where you left off.",
+        userId: user._id,
+        registrationStatus: user.registrationStatus,
+        paymentStatus: user.paymentStatus,
+        currentStep: user.currentStep,
+      });
+    }
 
     res.json({
       success: true,
-      exists: !!userExists,
+      exists: false,
+      message: "Email is available for registration",
     });
   } catch (error) {
     console.error("Check email error:", error);

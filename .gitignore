@@ -1,4 +1,29 @@
-node_modules/
+# Dependencies
+/node_modules
+
+# Environment Variables (CRITICAL)
 .env
-.DS_Store
+.env.local
+.env.production
+.env.development
+
+# Logs
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Uploads
+/uploads/
+
+# Build
+/dist/
+/build/

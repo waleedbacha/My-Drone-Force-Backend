@@ -30,7 +30,7 @@ const sendRegistrationEmail = async (userEmail, userName) => {
     const mailOptions = {
       from: `"My Drone Force" <${process.env.EMAIL_USER}>`,
       to: userEmail,
-      subject: "🎉 Welcome to My Drone Force! Registration Successful",
+      subject: "Welcome to mydroneforce.com! Registration Successful",
       html: `
         <!DOCTYPE html>
         <html>
@@ -48,18 +48,18 @@ const sendRegistrationEmail = async (userEmail, userName) => {
         <body>
           <div class="container">
             <div class="header">
-              <h1>🚁 Welcome to My Drone Force!</h1>
+              <h1> Welcome to My Drone Force!</h1>
             </div>
             <div class="content">
               <h2>Hello ${userName},</h2>
-              <p>Thank you for registering with <strong>My Drone Force</strong>! Your registration has been successfully completed.</p>
+              <p>Thank you for registering with <strong>MyDroneForce.com</strong>! Your registration has been successfully completed.</p>
               <p>You are now part of America's leading drone training and certification provider. Get ready to launch your drone career!</p>
               <h3>What's Next?</h3>
               <ul>
-                <li>📚 Access your course materials</li>
-                <li>🎓 Get FAA Part 107 certified</li>
-                <li>💼 Connect with job placement partners</li>
-                <li>🚁 Start your drone career journey</li>
+                <li> Access your course materials</li>
+                <li> Get FAA Part 107 certified</li>
+                <li> Connect with job placement partners</li>
+                <li> Start your drone career journey</li>
               </ul>
               <a href="https://mydroneforce.com" class="button">Visit Our Website</a>
             </div>
@@ -143,4 +143,81 @@ const sendAdminNotification = async (userData) => {
   }
 };
 
-module.exports = { sendRegistrationEmail, sendAdminNotification };
+// Send payment confirmation email with resume link
+const sendPaymentConfirmationEmail = async (
+  userEmail,
+  userName,
+  amount,
+  userId,
+) => {
+  try {
+    const resumeLink = `https://mydroneforce.com/register?resume=${userId}`;
+
+    const mailOptions = {
+      from: `"My Drone Force" <${process.env.EMAIL_USER}>`,
+      to: userEmail,
+      subject:
+        "✅ Payment Confirmed - Complete Your Registration If Not Already Done",
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #0066cc, #00a3ff); padding: 30px; text-align: center; color: white; border-radius: 10px 10px 0 0; }
+            .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+            .button { display: inline-block; background: #0066cc; color: white; padding: 12px 30px; text-decoration: none; border-radius: 50px; margin-top: 20px; }
+            .warning { background: #fff3cd; border: 1px solid #ffc107; padding: 15px; border-radius: 8px; margin: 20px 0; }
+            .footer { text-align: center; padding: 20px; font-size: 12px; color: #666; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1> Payment Confirmed!</h1>
+            </div>
+            <div class="content">
+              <h2>Hello ${userName},</h2>
+              <p>Thank you for your payment of <strong>$${amount}</strong> to MyDroneForce.com</p>
+              
+              <div class="warning">
+                <strong>⚠️ IMPORTANT:</strong> You still need to complete the <strong>Commitment Pledge</strong> if not already completed, to finish your registration.
+              </div>
+              
+              <p>Click the button below to resume your registration and complete the pledge:</p>
+              
+              <a href="${resumeLink}" class="button">Complete Your Registration →</a>
+              
+              <p style="margin-top: 20px;">If the button doesn't work, copy and paste this link into your browser:</p>
+              <p style="background: #e9ecef; padding: 10px; border-radius: 5px; word-break: break-all;">${resumeLink}</p>
+              
+              <p>If you don't complete the pledge, your registration will remain incomplete and you may not receive program access.</p>
+              
+              <p>Need help? Contact us at info@mydroneforce.com or call (501) 123-4567.</p>
+            </div>
+            <div class="footer">
+              <p>&copy; 2026 MyDroneForce.com All rights reserved.</p>
+              <p>300 South Spring Street, Little Rock, AR 72201</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log("✅ Payment confirmation email sent to:", userEmail);
+    return true;
+  } catch (error) {
+    console.error("❌ Payment confirmation email error:", error.message);
+    return false;
+  }
+};
+
+module.exports = {
+  sendRegistrationEmail,
+  sendAdminNotification,
+  sendPaymentConfirmationEmail,
+};
