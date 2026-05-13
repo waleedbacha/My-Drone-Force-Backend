@@ -15,7 +15,9 @@ const COURSE_PRICE_CENTS = COURSE_PRICE_DOLLARS * 100;
 const createPaymentIntent = async (req, res) => {
   try {
     const { userId, email, name } = req.body;
-
+    console.log("Backend: Create payment intent called for user:", userId);
+    console.log("Backend: Course price:", COURSE_PRICE_DOLLARS);
+    console.log("Backend: Request body:", { userId, email, name });
     // Validate required fields
     if (!userId) {
       return res.status(400).json({
