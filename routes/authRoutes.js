@@ -8,6 +8,7 @@ const {
   getRegistrationProgress,
 } = require("../controllers/authController");
 const { uploadSingle } = require("../middleware/uploadMiddleware");
+const User = require("../models/User");
 
 const router = express.Router();
 
@@ -185,7 +186,30 @@ const validateStep3 = [
     .notEmpty()
     .withMessage("Participant signature is required"),
 ];
-
+// @desc    Get user data by ID (public - for resume registration)
+// @route   GET /api/auth/user/:userId
+// @access  Public
+router.get("/user/:userId", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    res.json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    console.error("Get user error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+});
 // Routes
 router.post("/register/step1", uploadSingle, validateStep1, registerStep1);
 router.post("/register/step2", validateStep2, registerStep2);

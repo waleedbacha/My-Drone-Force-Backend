@@ -41,7 +41,7 @@ const sendRegistrationEmail = async (userEmail, userName) => {
             .container { max-width: 600px; margin: 0 auto; padding: 20px; }
             .header { background: linear-gradient(135deg, #0066cc, #00a3ff); padding: 30px; text-align: center; color: white; border-radius: 10px 10px 0 0; }
             .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
-            .button { display: inline-block; background: #0066cc; color: white; padding: 12px 30px; text-decoration: none; border-radius: 50px; margin-top: 20px; }
+            .button { display: inline-block; background: #0066cc; color: black; padding: 12px 30px; text-decoration: none; border-radius: 50px; margin-top: 20px; }
             .footer { text-align: center; padding: 20px; font-size: 12px; color: #666; }
           </style>
         </head>
@@ -53,7 +53,7 @@ const sendRegistrationEmail = async (userEmail, userName) => {
             <div class="content">
               <h2>Hello ${userName},</h2>
               <p>Thank you for registering with <strong>MyDroneForce.com</strong>! Your registration has been successfully completed.</p>
-              <p>You are now part of America's leading drone training and certification provider. Get ready to launch your drone career!</p>
+              <p>You are now part of Mid-South Delta's leading drone training and certification provider. Get ready to launch your drone career!</p>
               <h3>What's Next?</h3>
               <ul>
                 <li> Access your course materials</li>
@@ -64,7 +64,7 @@ const sendRegistrationEmail = async (userEmail, userName) => {
               <a href="https://mydroneforce.com" class="button">Visit Our Website</a>
             </div>
             <div class="footer">
-              <p>&copy; 2024 My Drone Force. All rights reserved.</p>
+              <p>&copy; 2026 My Drone Force. All rights reserved.</p>
               <p>300 South Spring Street, Little Rock, AR 72201</p>
             </div>
           </div>
@@ -97,12 +97,13 @@ const sendAdminNotification = async (userData) => {
 
     const mailOptions = {
       from: `"My Drone Force" <${process.env.EMAIL_USER}>`,
+
       to: recipientList,
       subject: "📝 New Student Registration",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px;">
           <h2 style="color: #0066cc;">🚁 New Student Registration</h2>
-          <p>A new student has registered on My Drone Force.</p>
+          <p>A new student has registered on MyDroneForce.com</p>
           <table style="border-collapse: collapse; width: 100%; margin: 15px 0;">
             <tr>
               <td style="padding: 10px; background: #f5f5f5; width: 120px;"><strong>Name:</strong></td>
@@ -122,7 +123,7 @@ const sendAdminNotification = async (userData) => {
             </tr>
           </table>
           <p>
-            <a href="https://mydroneforce.com/admin/dashboard" style="background: #0066cc; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
+            <a href="https://mydroneforce.com/admin/dashboard" style="background: #0066cc; color: black; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
               View Admin Dashboard →
             </a>
           </p>
@@ -168,7 +169,7 @@ const sendPaymentConfirmationEmail = async (
             .container { max-width: 600px; margin: 0 auto; padding: 20px; }
             .header { background: linear-gradient(135deg, #0066cc, #00a3ff); padding: 30px; text-align: center; color: white; border-radius: 10px 10px 0 0; }
             .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
-            .button { display: inline-block; background: #0066cc; color: white; padding: 12px 30px; text-decoration: none; border-radius: 50px; margin-top: 20px; }
+            .button { display: inline-block; background: #0066cc; color: black; padding: 12px 30px; text-decoration: none; border-radius: 50px; margin-top: 20px; }
             .warning { background: #fff3cd; border: 1px solid #ffc107; padding: 15px; border-radius: 8px; margin: 20px 0; }
             .footer { text-align: center; padding: 20px; font-size: 12px; color: #666; }
           </style>
@@ -195,7 +196,7 @@ const sendPaymentConfirmationEmail = async (
               
               <p>If you don't complete the pledge, your registration will remain incomplete and you may not receive program access.</p>
               
-              <p>Need help? Contact us at info@mydroneforce.com or call (501) 123-4567.</p>
+              <p>Need help? Contact us at info@mydroneforce.com or call (501) 859-4672.</p>
             </div>
             <div class="footer">
               <p>&copy; 2026 MyDroneForce.com All rights reserved.</p>
