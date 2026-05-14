@@ -145,6 +145,19 @@ const registerStep1 = async (req, res) => {
       printedName,
     } = req.body;
 
+    const existingUser = await User.findOne({ email });
+
+    if (
+      existingUser &&
+      existingUser.registrationStatus === "registration_completed"
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "This email is already registered. Please use a different email address or contact support.",
+        alreadyRegistered: true,
+      });
+    }
     // Parse commitmentAgreements (handles JSON string or array)
     const parsedCommitmentAgreements =
       parseCommitmentAgreements(commitmentAgreements);
