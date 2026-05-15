@@ -196,7 +196,7 @@ const sendPaymentConfirmationEmail = async (
               
               <p>If you don't complete the pledge, your registration will remain incomplete and you may not receive program access.</p>
               
-              <p>Need help? Contact us at info@mydroneforce.com or call (501) 859-4672.</p>
+              <p>Need help? Contact us at mydroneforce@gmail.com or call (501) 859-4672.</p>
             </div>
             <div class="footer">
               <p>&copy; 2026 MyDroneForce.com All rights reserved.</p>
