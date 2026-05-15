@@ -86,7 +86,7 @@ const sendRegistrationEmail = async (userEmail, userName) => {
 const sendAdminNotification = async (userData) => {
   try {
     // Handle multiple admin emails (comma-separated)
-    let adminEmails = process.env.ADMIN_EMAIL;
+    let adminEmails = process.env.ADMIN_NOTIFICATION_EMAIL;
     if (!adminEmails) {
       console.error("❌ ADMIN_EMAIL environment variable not set");
       return false;
@@ -99,10 +99,10 @@ const sendAdminNotification = async (userData) => {
       from: `"My Drone Force" <${process.env.EMAIL_USER}>`,
 
       to: recipientList,
-      subject: "📝 New Student Registration",
+      subject: " New Student Registration",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px;">
-          <h2 style="color: #0066cc;">🚁 New Student Registration</h2>
+          <h2 style="color: #0066cc;"> New Student Registration</h2>
           <p>A new student has registered on MyDroneForce.com</p>
           <table style="border-collapse: collapse; width: 100%; margin: 15px 0;">
             <tr>
